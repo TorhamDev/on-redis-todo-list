@@ -7,4 +7,4 @@ class PasswordHandler:
         return password
     
     def verify_passowrd(hashed_pass: str, raw_pass: str):
-        return bcrypt.checkpw(raw_pass, hashed_pass)
+        return bcrypt.checkpw(raw_pass.encode(), hashed_pass.encode())

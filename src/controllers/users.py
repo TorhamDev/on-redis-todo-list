@@ -16,3 +16,12 @@ class UserController:
                 "username": username,
                 "password": hashed_pass
             })
+    
+    def login(self, username: str, password: str):
+        user = self.redis_db.hgetall(f"user:{username}")
+        if user:
+            if not PasswordHandler.verify_passowrd(user.get("password"), password):
+                raise exceptions.WrongCredentials
+            return {"test":"token"}
+        else:
+            raise exceptions.WrongCredentials

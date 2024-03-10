@@ -13,4 +13,9 @@ class BaseException(HTTPException):
 
 class UserAlreadyExists(BaseException):
     status_code = status.HTTP_400_BAD_REQUEST
-    detail = "user already exists."
+    detail = "User already exists."
+
+
+class WrongCredentials(BaseException):
+    status_code = 403
+    detail = "wrong credentials."

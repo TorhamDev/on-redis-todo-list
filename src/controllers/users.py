@@ -1,6 +1,6 @@
 from redis import Redis
 from src import exceptions
-from src.utils import PasswordHandler
+from src.utils import PasswordHandler, JWTHandler
 
 
 class UserController:
@@ -22,6 +22,6 @@ class UserController:
         if user:
             if not PasswordHandler.verify_passowrd(user.get("password"), password):
                 raise exceptions.WrongCredentials
-            return {"test":"token"}
+            return JWTHandler.generate(username)
         else:
             raise exceptions.WrongCredentials

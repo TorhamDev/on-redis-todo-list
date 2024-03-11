@@ -2,12 +2,15 @@ import jwt
 from datetime import datetime, timedelta
 from src.settings import get_settings
 from fastapi.exceptions import HTTPException
-from fastapi import status
+from fastapi import status, Header
+from src.schemas.jwt import JWTPayload
+from typing import Annotated
+
 
 settings = get_settings()
 
 class JWTHandler:
-    def generate(username: str) -> str:
+    def generate(username: str) -> JWTPayload:
         expire_time = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
         secret_key = settings.SECRET_KEY
@@ -16,9 +19,16 @@ class JWTHandler:
 
         to_encode = {"exp": expires_delta, "username": username}
         encoded_jwt = jwt.encode(to_encode, secret_key, settings.ALGORITHM)
-        return encoded_jwt
+
+        return JWTPayload(access=encoded_jwt)
     
-    def verify_token(jwt_token: str) -> bool:
+    def verify_token(auth_token: Annotated[str, Header()]) -> bool:
+        jwt_token = auth_token
+        if not jwt_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="auth header not found.",               
+            )
         try:
             token_data = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
 

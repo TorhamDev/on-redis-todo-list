@@ -35,9 +35,21 @@ def get_all_todos(
 
 
 @router.get("/{todo_id}/")
-def get_a_todo():
-    ...
+def get_a_todo(
+    todo_id: str,
+    user_info: JWTPayload = Depends(JWTHandler.verify_token),
+    db: Redis = Depends(get_db),
+):
+    data = TodoController(db).get_one(username=user_info.username, todo_id=todo_id)
+
+    return data
+
 
 @router.put("/{todo_id}")
 def update_a_todo():
+    ...
+
+
+@router.delete("/{todo_id}")
+def delete_a_todo():
     ...

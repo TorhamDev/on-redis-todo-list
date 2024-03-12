@@ -3,6 +3,8 @@ from src.schemas._input import CreateTodoInput
 from src.schemas.output import TodoDetailsOutput, TodoListDetailsOutput, TodoSimpleOutput
 from uuid import uuid4
 from src.utils.generics import divide_chunks
+from src import exceptions
+
 
 class TodoController:
     def __init__(self, redis_db: Redis) -> None:
@@ -28,3 +30,12 @@ class TodoController:
         data = [TodoSimpleOutput(id=todo[1], title=todo[0]) for todo in all_todos]
         
         return TodoListDetailsOutput(todos=data)
+    
+    def get_one(self, username: str, todo_id: str) -> TodoDetailsOutput:
+
+        todo = self.redis_db.hgetall(f"user:{username}:todo:{todo_id}")
+        
+        if not todo:
+            raise exceptions.NotFound
+        
+        return TodoDetailsOutput(**todo)

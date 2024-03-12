@@ -28,3 +28,8 @@ class UserNotFound(BaseException):
 class UsernameIsAlreadyTaken(BaseException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = "This username is already taken."
+
+
+class NotFound(BaseException):
+    status_code = 404
+    detail = "Not found."

@@ -5,7 +5,7 @@ from redis import Redis
 from src.controllers.users import UserController
 from src.schemas.jwt import JWTResponsePayload
 
-router = APIRouter(tags=["users", "login"])
+router = APIRouter(tags=["login"])
 
 @router.post("/", response_model=JWTResponsePayload)
 def login_user(

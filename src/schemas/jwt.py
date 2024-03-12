@@ -1,5 +1,9 @@
 from pydantic import BaseModel
 
 
-class JWTPayload(BaseModel):
+class JWTResponsePayload(BaseModel):
     access: str
+
+class JWTPayload(BaseModel):
+    exp: int
+    username: str

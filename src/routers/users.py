@@ -3,6 +3,9 @@ from src.schemas._input import RegisterUserInput
 from src.db._redis import get_db
 from redis import Redis
 from src.controllers.users import UserController
+from src.utils.jwt import JWTHandler
+from src.schemas.jwt import JWTPayload
+from src.schemas._input import UpdateUserInput
 
 router = APIRouter(tags=["users"])
 
@@ -13,3 +16,14 @@ def register_user(
 ):
     UserController(db).register(data.username, data.password)
     return data
+
+@router.patch("/")
+def update_user(
+    user_info: JWTPayload = Depends(JWTHandler.verify_token),
+    data: UpdateUserInput = Body(),
+
+):
+    print(user_info)
+    print(data)
+
+    return {"TeST":"ST"}

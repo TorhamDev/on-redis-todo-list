@@ -9,3 +9,6 @@ class RegisterUserInput(BaseModel):
 class LoginInput(BaseModel):
     username: str
     password: str
+
+class UpdateUserInput(BaseModel):
+    new_username: str

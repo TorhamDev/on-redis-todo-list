@@ -4,6 +4,7 @@ from redis import Redis
 from src.utils.jwt import JWTHandler
 from src.schemas.jwt import JWTPayload
 from src.schemas._input import CreateTodoInput
+from src.schemas.output import TodoListDetailsOutput
 from src.controllers.todo import TodoController
 
 
@@ -17,14 +18,21 @@ def create_todo(
     db: Redis = Depends(get_db),
 
 ):
-    data = TodoController(db).create_todo(username=user_info.username, todo_data=data)
+    data = TodoController(db).create(username=user_info.username, todo_data=data)
     
     return data
 
 
-@router.get("/")
-def get_all_todos():
-    ...
+@router.get("/", response_model=TodoListDetailsOutput)
+def get_all_todos(
+    user_info: JWTPayload = Depends(JWTHandler.verify_token),
+    db: Redis = Depends(get_db),
+
+):
+    data = TodoController(db).get_all(username=user_info.username)
+    
+    return data
+
 
 @router.get("/{todo_id}/")
 def get_a_todo():

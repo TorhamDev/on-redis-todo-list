@@ -12,3 +12,8 @@ class LoginInput(BaseModel):
 
 class UpdateUserInput(BaseModel):
     new_username: str
+
+
+class CreateTodoInput(BaseModel):
+    title: str
+    details: str

@@ -17,13 +17,14 @@ def register_user(
     UserController(db).register(data.username, data.password)
     return data
 
+
 @router.patch("/")
 def update_user(
     user_info: JWTPayload = Depends(JWTHandler.verify_token),
     data: UpdateUserInput = Body(),
+    db: Redis = Depends(get_db),
 
 ):
-    print(user_info)
-    print(data)
-
-    return {"TeST":"ST"}
+    UserController(db).update_user(username=user_info.username, update_data=data)
+    
+    return JWTHandler.generate(data.new_username, user_info.exp)

@@ -10,14 +10,14 @@ from typing import Annotated
 settings = get_settings()
 
 class JWTHandler:
-    def generate(username: str) -> JWTResponsePayload:
+    def generate(username: str, exp_timestamp: int | None = None) -> JWTResponsePayload:
         expire_time = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
         secret_key = settings.SECRET_KEY
 
         expires_delta = datetime.utcnow() + timedelta(minutes=expire_time)
 
-        to_encode = {"exp": expires_delta, "username": username}
+        to_encode = {"exp": exp_timestamp if exp_timestamp else expires_delta, "username": username}
         encoded_jwt = jwt.encode(to_encode, secret_key, settings.ALGORITHM)
 
         return JWTResponsePayload(access=encoded_jwt)

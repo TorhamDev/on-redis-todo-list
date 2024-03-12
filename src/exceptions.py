@@ -19,3 +19,12 @@ class UserAlreadyExists(BaseException):
 class WrongCredentials(BaseException):
     status_code = 403
     detail = "wrong credentials."
+
+
+class UserNotFound(BaseException):
+    status_code = 404
+    detail = "User not found."
+
+class UsernameIsAlreadyTaken(BaseException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = "This username is already taken."

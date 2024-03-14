@@ -15,5 +15,5 @@ class UpdateUserInput(BaseModel):
 
 
 class TodoInput(BaseModel):
-    title: str
-    details: str
+    title: str | None = None
+    details: str | None = None

@@ -44,26 +44,27 @@ class TodoController:
 
 
         todos = self.redis_db.lrange(f"user:{username}:todos", 0, -1)
-
+        todo_data = self.redis_db.hgetall(f"user:{username}:todo:{todo_id}")
         index_to_update = None
         for t_index in range(1, len(todos), 2):
-            print(todos[t_index])
             if todo_id == todos[t_index]:
                 index_to_update = t_index - 1
         
         if index_to_update is None:
             raise exceptions.NotFound
         
+        to_update = {
+                "id":todo_data["id"],
+                "title":data.title if data.title else todo_data["title"],
+                "details":data.details if data.details else todo_data["details"]
+            }
         # update title in titles list
-        self.redis_db.lset(f"user:{username}:todos", index_to_update, data.title)
+        self.redis_db.lset(f"user:{username}:todos", index_to_update, to_update["title"])
 
         # update the hash of todo data
         self.redis_db.hset(
             f"user:{username}:todo:{todo_id}",
-            mapping={
-                "title":data.title,
-                "details":data.details
-            }
+            mapping=to_update
         )
 
-        return TodoDetailsOutput(id=todo_id, title=data.title, details=data.details)
+        return TodoDetailsOutput(**to_update)

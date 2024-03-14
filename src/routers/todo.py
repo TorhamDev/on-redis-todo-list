@@ -3,7 +3,7 @@ from src.db._redis import get_db
 from redis import Redis
 from src.utils.jwt import JWTHandler
 from src.schemas.jwt import JWTPayload
-from src.schemas._input import CreateTodoInput
+from src.schemas._input import TodoInput
 from src.schemas.output import TodoListDetailsOutput
 from src.controllers.todo import TodoController
 
@@ -14,7 +14,7 @@ router = APIRouter(tags=["todo"])
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_todo(
     user_info: JWTPayload = Depends(JWTHandler.verify_token),
-    data: CreateTodoInput = Body(),
+    data: TodoInput = Body(),
     db: Redis = Depends(get_db),
 
 ):
@@ -46,9 +46,14 @@ def get_a_todo(
 
 
 @router.put("/{todo_id}")
-def update_a_todo():
-    ...
-
+def update_a_todo(    
+    todo_id: str,
+    user_info: JWTPayload = Depends(JWTHandler.verify_token),
+    data: TodoInput = Body(),
+    db: Redis = Depends(get_db),
+):
+    result = TodoController(db).update(username=user_info.username, todo_id=todo_id, data=data)
+    return result
 
 @router.delete("/{todo_id}")
 def delete_a_todo():

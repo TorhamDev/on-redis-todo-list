@@ -1,5 +1,5 @@
 from redis import Redis
-from src.schemas._input import CreateTodoInput
+from src.schemas._input import TodoInput
 from src.schemas.output import TodoDetailsOutput, TodoListDetailsOutput, TodoSimpleOutput
 from uuid import uuid4
 from src.utils.generics import divide_chunks
@@ -10,7 +10,7 @@ class TodoController:
     def __init__(self, redis_db: Redis) -> None:
         self.redis_db = redis_db
     
-    def create(self, username: str, todo_data: CreateTodoInput) -> TodoDetailsOutput:
+    def create(self, username: str, todo_data: TodoInput) -> TodoDetailsOutput:
         
         task_id = str(uuid4())
         task_data = {
@@ -39,3 +39,31 @@ class TodoController:
             raise exceptions.NotFound
         
         return TodoDetailsOutput(**todo)
+    
+    def update(self, username: str, todo_id: str, data: TodoInput) -> TodoDetailsOutput:
+
+
+        todos = self.redis_db.lrange(f"user:{username}:todos", 0, -1)
+
+        index_to_update = None
+        for t_index in range(1, len(todos), 2):
+            print(todos[t_index])
+            if todo_id == todos[t_index]:
+                index_to_update = t_index - 1
+        
+        if index_to_update is None:
+            raise exceptions.NotFound
+        
+        # update title in titles list
+        self.redis_db.lset(f"user:{username}:todos", index_to_update, data.title)
+
+        # update the hash of todo data
+        self.redis_db.hset(
+            f"user:{username}:todo:{todo_id}",
+            mapping={
+                "title":data.title,
+                "details":data.details
+            }
+        )
+
+        return TodoDetailsOutput(id=todo_id, title=data.title, details=data.details)

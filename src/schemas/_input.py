@@ -14,6 +14,6 @@ class UpdateUserInput(BaseModel):
     new_username: str
 
 
-class CreateTodoInput(BaseModel):
+class TodoInput(BaseModel):
     title: str
     details: str

@@ -68,3 +68,21 @@ class TodoController:
         )
 
         return TodoDetailsOutput(**to_update)
+    
+
+    def delete(self, username:str, todo_id: str) -> None:
+
+        todos = self.redis_db.lrange(f"user:{username}:todos", 0, -1)
+        id_to_del = None
+        title_to_del = None
+        for t_index in range(1, len(todos), 2):
+            if todo_id == todos[t_index]:
+                id_to_del = t_index
+                title_to_del = t_index - 1
+        
+
+        self.redis_db.lset(f"user:{username}:todos", id_to_del, "TO_BE_DELETED")
+        self.redis_db.lset(f"user:{username}:todos", title_to_del, "TO_BE_DELETED")
+        self.redis_db.lrem(f"user:{username}:todos", 2, value="TO_BE_DELETED")
+
+        self.redis_db.delete(f"user:{username}:todo:{todo_id}")
